@@ -78,28 +78,6 @@ The loop label marks the beginning of a loop. The code in this loop performs ope
 
     - This is a breakpoint instruction used to halt execution, usually for debugging purposes.
 
-### Summary
-
-- The code initializes stack and global pointers.
-
-- It then enters a loop where it:
-
-  - Loads two floating-point numbers from the stack.
-
-  - Squares each number.
-
-  - Sums the squares.
-
-  - Computes the square root of the sum.
-
-  - Adds a floating-point value to f0.
-
-  - Increments the stack pointer.
-
-  - Continues the loop until the stack pointer reaches a specific limit.
-
-- Finally, it halts execution with a breakpoint.و
-
 -                *********** Fixed_point_Unit.v ***********                *
 
 ### 1. Fixed_Point_Unit Module
