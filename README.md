@@ -1,48 +1,128 @@
-<img src="https://github.com/IUST-Computer-Organization/.github/blob/main/images/CompOrg_orange.png" alt="Image" width="85" height="85" style="vertical-align:middle"> LUMOS RISC-V
-=================================
-> Light Utilization with Multicycle Operational Stages (LUMOS) RISC-V Processor Core
+Computer Organization - Spring 2024
 
-<div align="justify">
+==============================================================
 
-## Introduction
+## Iran Univeristy of Science and Technology
 
-**LUMOS** is a multicycle RISC-V processor that implements a subset of `RV32I` instruction set, designed for educational use in computer organization classes at **Iran University of Science and Technology**. It allows for modular design projects, enabling students to gain hands-on experience with processor architecture.
+## Assignment 1: Assembly code execution on phoeniX RISC-V core
 
-## Features
+- Name:Amir Mohammad Emam
 
-- LUMOS executes instructions in multiple stages, such as `instruction_fetch`, `fetch_wait`, `fetch_done`, `decode`, `execute`, `memory_access`, and etc. This approach allows for more complex operations and better utilization of processor resources compared to single-cycle designs. This processor does not support the entire `RV32I` instruction set, which is the base integer instruction set of RISC-V. Instead, it focuses on a subset of instructions that are essential for educational purposes and demonstrating the principles of computer architecture.
+- Team Members:
+  Sara Dadkhoo : 400412058
+  Matin Rahmati :400412157
 
-- The processor is designed with modularity in mind, allowing students to work on various components of the processor. As part of their course projects, students will design different execution units, such as FPUs, control units, memory interfaces, and other modules that are integral to the processor's functionality.
+- Student ID:400411144
 
-## LUMOS Datapath
+- Date:1403/04/12
 
-In a multicycle implementation, we can break down each instruction into a series of steps corresponding to the functional unit operations that are needed. These steps can be used to create a multi-cycle implementation. In this architecture, each step will take 1 clock cycle. This allows that components in the design and different functional units to be used more than once per instruction, as long as it is used on different clock cycles. This sharing of resources can help reduce the amount of hardware required. This classic view of CPU design partitions the design of a processor into data path design and control design. Data path design focuses on the design of ALU and other functional units as well as accessing the registers and memory. Control path design focuses on the design of the state machines to decode instructions and generate the sequence of control signals necessary to appropriately manipulate the data path.
+## Report
 
-![Alt text](https://github.com/IUST-Computer-Organization/LUMOS/blob/main/Images/Datapath_1.png "LUMOS Datapath Section 1")
-![Alt text](https://github.com/IUST-Computer-Organization/LUMOS/blob/main/Images/Datapath_2.png "LUMOS Datapath Section 2")
-![Alt text](https://github.com/IUST-Computer-Organization/LUMOS/blob/main/Images/Datapath_3.png "LUMOS Datapath Section 3")
+    *                *********** Second Project ***********                *
 
-## Synthesis
+-                *********** Assembly.s ***********                *
 
-This processor core is synthesizable in the 45nm CMOS technology node. LUMOS has gone through the RTL-to-GDS flow using *Synopsys Design Compiler* and *Cadence SoC Encounter* tools. At this node, the core can achieve a frequency of **500MHz** while occupying **12000um2** of area and consuming around **3mw** of power.
-</div>
+### Initialization
 
-<!-- ![Alt text](https://github.com/IUST-Computer-Organization/LUMOS/blob/main/LUMOS.png "The LUMOS microprocessor synthesized with Design Compiler and placed and routed by Cadence Encounter" =300x300)  -->
+1. `li sp, 0x3C00`
 
-<picture>
-    <img 
-        alt="The LUMOS microprocessor synthesized with Design Compiler and placed and routed by Cadence Encounter" 
-        src="https://github.com/IUST-Computer-Organization/LUMOS/blob/main/Images/LUMOS.png"
-        width="550" 
-        height="550"
-    > 
-</picture> 
+   - Load the immediate value 0x3C00 into the stack pointer register sp.
 
+2. `addi gp, sp, 392`
 
-## Copyright
+   - Add the immediate value 392 to the stack pointer (`sp`) and store the result in the global pointer register gp.
 
-Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
+### Loop
 
-Copyright 2024 Iran University of Science and Technology - iustCompOrg@gmail.com  
+The loop label marks the beginning of a loop. The code in this loop performs operations on floating-point numbers.
 
-</div>
+3. `flw f1, 0(sp)`
+
+   - Load the word from the address in sp (stack pointer) into the floating-point register f1.
+
+4. `flw f2, 4(sp)`
+
+   - Load the word from the address sp + 4 into the floating-point register f2.
+
+5. `fmul.s f10, f1, f1`
+
+   - Multiply the floating-point value in f1 with itself and store the result in f10.
+
+6. `fmul.s f20, f2, f2`
+
+   - Multiply the floating-point value in f2 with itself and store the result in f20.
+
+7. `fadd.s f30, f10, f20`
+
+   - Add the values in f10 and f20 and store the result in f30.
+
+8. `fsqrt.s x3, f30`
+
+   - Compute the square root of the value in f30 and store the result in the integer register x3.
+
+9. `fadd.s f0, f0, f3`
+
+   - Add the value in f3 to f0 and store the result in f0.
+
+10. `addi sp, sp, 8`
+
+    - Increment the stack pointer by 8.
+
+11. `blt sp, gp, loop`
+
+    - Compare sp with gp. If sp is less than gp, branch to the label loop.
+
+### End of Program
+
+12. `ebreak`
+
+    - This is a breakpoint instruction used to halt execution, usually for debugging purposes.
+
+### Summary
+
+- The code initializes stack and global pointers.
+
+- It then enters a loop where it:
+
+  - Loads two floating-point numbers from the stack.
+
+  - Squares each number.
+
+  - Sums the squares.
+
+  - Computes the square root of the sum.
+
+  - Adds a floating-point value to f0.
+
+  - Increments the stack pointer.
+
+  - Continues the loop until the stack pointer reaches a specific limit.
+
+- Finally, it halts execution with a breakpoint.و
+
+-                *********** Fixed_point_Unit.v ***********                *
+
+### 1. Fixed_Point_Unit Module
+
+This is the main module responsible for executing various operations. The inputs include clock signal (`clk`), reset signal (`reset`), two operands (`operand_1` and `operand_2`), and the operation type (`operation`). The outputs include the result of the operation (`result`) and a signal indicating the result is ready (`ready`).
+
+The operations handled are:
+
+- Addition (`FPU_ADD`)
+- Subtraction (`FPU_SUB`)
+- Multiplication (`FPU_MUL`)
+- Square root (`FPU_SQRT`)
+
+### 2. Square Root Circuit
+
+This circuit calculates the square root of a fixed-point number using a state machine. The state machine has two main states: INITIAL for initialization and SQRT for performing the square root calculations. Internal variables such as root, root_ready, radic, aux_root, aux_result, f_result, iteration, and state1 are used to manage the computations.
+
+### 3. Multiplier Circuit
+
+This circuit is designed to perform multiplication of two fixed-point numbers. It includes internal variables and signals for storing intermediate and final results of the multiplication. The state machine manages the stages of multiplication, including states like INITIALSTATE, FIRSTMUL, SECONDMUL, THIRDMUL, FOURTHMUL, and ADD.
+
+### Multiplier Module
+
+This is a simple multiplier module that performs multiplication between two 16-bit numbers and produces a 32-bit result. The inputs are two 16-bit operands (`operand_1` and `operand_2`), and the output is the 32-bit product (`product`).
+
+These components work together to form a comprehensive and efficient arithmetic unit for fixed-point numbers capable of performing various mathematical operations.
